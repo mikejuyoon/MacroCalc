@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">MacroCalc</string>
+    <string name="mainTitleText">MacroCalc</string>
+    <string name="action_settings">Settings</string>
+    <string name="dietType">Diet Type</string>
+    <string name="targetCaloriesText">Target Calories</string>
+    <string name="macroRatioText">Macro Ratio</string>
+    <string name="macroRatioFormatText">(Carb / Protien / Fat)</string>
+    <string name="dailyIntakeOutputText">Daily Intake</string>
+
+</resources>
