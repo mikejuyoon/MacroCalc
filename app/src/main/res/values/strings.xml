@@ -7,7 +7,7 @@
     <string name="dietType">Diet Type</string>
     <string name="targetCaloriesText">Target Calories</string>
     <string name="macroRatioText">Macro Ratio</string>
-    <string name="macroRatioFormatText">(Carb / Protien / Fat)</string>
+    <string name="macroRatioFormatText">(Carb / Protein / Fat)</string>
     <string name="dailyIntakeOutputText">Daily Intake</string>
 
 </resources>

@@ -18,7 +18,7 @@ public class MainActivity extends Activity {
 
     TextView dietPlanView;
     TextView carbCount;
-    TextView protienCount;
+    TextView proteinCount;
     TextView fatCount;
     EditText targetCaloriesET;
 
@@ -29,7 +29,7 @@ public class MainActivity extends Activity {
 
         setupUI(findViewById(R.id.parent));
         carbCount = (TextView) findViewById(R.id.carbCount);
-        protienCount = (TextView) findViewById(R.id.protienCount);
+        proteinCount = (TextView) findViewById(R.id.proteinCount);
         fatCount = (TextView) findViewById(R.id.fatCount);
     }
 
@@ -60,7 +60,7 @@ public class MainActivity extends Activity {
         double temp = percentRatio * calories;
         return (int) (temp/4);
     }
-    private int calculateProtien(int calories, int ratio){
+    private int calculateProtein(int calories, int ratio){
         double percentRatio = ((double)ratio)/100;
         double temp = percentRatio * calories;
         return (int) (temp/4);
@@ -114,7 +114,7 @@ public class MainActivity extends Activity {
                 dietPlanView.setText("High Carb Plan");
 
                 carbCount.setText( String.valueOf(calculateCarbs(targetCalories, 60)));
-                protienCount.setText( String.valueOf(calculateProtien(targetCalories, 25)));
+                proteinCount.setText( String.valueOf(calculateProtein(targetCalories, 25)));
                 fatCount.setText( String.valueOf(calculateFat(targetCalories, 15)));
             } else {
                 invalidEntryAlert("Please enter a valid Target Calories amount. (1-9000)");
@@ -140,7 +140,7 @@ public class MainActivity extends Activity {
                 dietPlanView.setText("Moderate Plan");
 
                 carbCount.setText( String.valueOf(calculateCarbs(targetCalories, 50)));
-                protienCount.setText( String.valueOf(calculateProtien(targetCalories, 30)));
+                proteinCount.setText( String.valueOf(calculateProtein(targetCalories, 30)));
                 fatCount.setText( String.valueOf(calculateFat(targetCalories, 20)));
             } else {
                 invalidEntryAlert("Please enter a valid Target Calories amount. (1-9000)");
@@ -166,7 +166,7 @@ public class MainActivity extends Activity {
                 dietPlanView.setText("Zone Plan");
 
                 carbCount.setText( String.valueOf(calculateCarbs(targetCalories, 40)));
-                protienCount.setText( String.valueOf(calculateProtien(targetCalories, 40)));
+                proteinCount.setText( String.valueOf(calculateProtein(targetCalories, 40)));
                 fatCount.setText( String.valueOf(calculateFat(targetCalories, 20)));
             } else {
                 invalidEntryAlert("Please enter a valid Target Calories amount. (1-9000)");
@@ -192,7 +192,7 @@ public class MainActivity extends Activity {
                 dietPlanView.setText("Low Carb Plan");
 
                 carbCount.setText( String.valueOf(calculateCarbs(targetCalories, 25)));
-                protienCount.setText( String.valueOf(calculateProtien(targetCalories, 45)));
+                proteinCount.setText( String.valueOf(calculateProtein(targetCalories, 45)));
                 fatCount.setText( String.valueOf(calculateFat(targetCalories, 30)));
             } else {
                 invalidEntryAlert("Please enter a valid Target Calories amount. (1-9000)");
