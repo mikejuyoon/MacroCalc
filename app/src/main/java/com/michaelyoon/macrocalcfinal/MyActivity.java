@@ -27,7 +27,7 @@ import android.widget.TextView;
 
 public class MyActivity extends FragmentActivity {
 
-    private final static String SHARED_PREFERENCES_NAME = "com.michaelyoon.macrocalc.savedData";
+    private final static String SHARED_PREFERENCES_NAME = "com.michaelyoon.macrocalcfinal.savedData";
     public static SharedPreferences savedDietData;
 
     TextView calcDietTypeTV;
@@ -66,10 +66,6 @@ public class MyActivity extends FragmentActivity {
     EditText addProteinET;
     EditText addFatET;
 
-    boolean kbHideSetupOne;
-    boolean kbHideSetupTwo;
-
-
     private static final int NUM_PAGES = 2;
     private ViewPager mPager;
     private PagerAdapter mPagerAdapter;
@@ -88,8 +84,6 @@ public class MyActivity extends FragmentActivity {
         mPager.setAdapter(mPagerAdapter);
         
         savedDietData = getSharedPreferences(SHARED_PREFERENCES_NAME, MODE_PRIVATE);
-        kbHideSetupOne = false;
-        kbHideSetupTwo = false;
     }
 
     @Override
@@ -99,32 +93,6 @@ public class MyActivity extends FragmentActivity {
             mPager.setCurrentItem(1);
         }
     }
-
-    @Override
-    protected void onResume(){
-        super.onResume();
-    }
-
-
-    public void loadDataViewTwo(){
-
-        targetDietTypeTV.setText(savedDietData.getString("targetDietType", null));
-        targetCaloriesTV.setText(String.valueOf(savedDietData.getInt("targetCalories", -1)));
-        targetCarbTV.setText(String.valueOf(savedDietData.getInt("targetCarb", -1)));
-        targetProteinTV.setText(String.valueOf(savedDietData.getInt("targetProtein", -1)));
-        targetFatTV.setText(String.valueOf(savedDietData.getInt("targetFat", -1)));
-
-        currCalories = savedDietData.getInt("currCalories",-1);
-        currCarb = savedDietData.getInt("currCarb",-1);
-        currProtein = savedDietData.getInt("currProtein",-1);
-        currFat = savedDietData.getInt("currFat",-1);
-
-        currCaloriesTV.setText(String.valueOf(currCalories));
-        currCarbTV.setText(String.valueOf(currCarb));
-        currProteinTV.setText(String.valueOf(currProtein));
-        currFatTV.setText(String.valueOf(currFat));
-    }
-
 
     @Override
     public void onBackPressed() {
@@ -161,8 +129,12 @@ public class MyActivity extends FragmentActivity {
     }
 
 
+
+
+
     //--------------PRIVATE CLASS FUNCTIONS---------------
     //====================================================
+    
     private int calculateCarbs(int calories, int ratio) {
         double percentRatio = ((double) ratio) / 100;
         double temp = percentRatio * calories;
@@ -179,52 +151,6 @@ public class MyActivity extends FragmentActivity {
         double percentRatio = ((double) ratio) / 100;
         double temp = percentRatio * calories;
         return (int) (temp / 9);
-    }
-
-    private void invalidEntryAlert(String message) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(MyActivity.this);
-
-        builder.setTitle("Invalid Entry");
-        builder.setPositiveButton("OK", null);
-        builder.setMessage(message);
-
-        AlertDialog theAlertDialog = builder.create();
-        theAlertDialog.show();
-    }
-
-    private void closeKeyboard() {
-        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-        imm.hideSoftInputFromWindow(inputCaloriesET.getWindowToken(), 0);
-    }
-    //====================================================
-
-
-    //--------------PUBLIC CLASS FUNCTIONS---------------
-    //====================================================
-
-    public void setupViewOne() {
-        inputCaloriesET = (EditText) findViewById(R.id.inputCaloriesET);
-        calcCarbTV = (TextView) findViewById(R.id.calcCarbTV);
-        calcProteinTV = (TextView) findViewById(R.id.calcProteinTV);
-        calcFatTV = (TextView) findViewById(R.id.calcFatTV);
-        calcDietTypeTV = (TextView) findViewById(R.id.calcDietTypeTV);
-    }    
-
-    public void setupViewTwo() {
-        addCarbET = (EditText) findViewById(R.id.addCarbET);
-        addProteinET = (EditText) findViewById(R.id.addProteinET);
-        addFatET = (EditText) findViewById(R.id.addFatET);
-
-        targetDietTypeTV = (TextView) findViewById(R.id.targetDietTypeTV);
-        targetCaloriesTV = (TextView) findViewById(R.id.targetCaloriesTV);
-        targetCarbTV = (TextView) findViewById(R.id.targetCarbTV);
-        targetProteinTV = (TextView) findViewById(R.id.targetProteinTV);
-        targetFatTV = (TextView) findViewById(R.id.targetFatTV);
-
-        currCaloriesTV = (TextView) findViewById(R.id.currCaloriesTV);
-        currCarbTV = (TextView) findViewById(R.id.currCarbTV);
-        currProteinTV = (TextView) findViewById(R.id.currProteinTV);
-        currFatTV = (TextView) findViewById(R.id.currFatTV);
     }
 
     // Checks to see if inputed calories amount is in range (100-9000)
@@ -249,6 +175,98 @@ public class MyActivity extends FragmentActivity {
         }
         else
             return targetCalories;
+    }
+
+    private void invalidEntryAlert(String message) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(MyActivity.this);
+
+        builder.setTitle("Invalid Entry");
+        builder.setPositiveButton("OK", null);
+        builder.setMessage(message);
+
+        AlertDialog theAlertDialog = builder.create();
+        theAlertDialog.show();
+    }
+
+    private void closeKeyboard() {
+        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(inputCaloriesET.getWindowToken(), 0);
+    }
+
+    private static void hideSoftKeyboard(Activity activity) {
+        InputMethodManager inputMethodManager = (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
+        inputMethodManager.hideSoftInputFromWindow(activity.getCurrentFocus().getWindowToken(), 0);
+    }
+
+    private void setupKeyboardHide(View view) {
+        //Set up touch listener for non-text box views to hide keyboard.
+        if (!(view instanceof EditText)) {
+            view.setOnTouchListener(new View.OnTouchListener() {
+                public boolean onTouch(View v, MotionEvent event) {
+                    hideSoftKeyboard(MyActivity.this);
+                    return false;
+                }
+            });
+        }
+        //If a layout container, iterate over children and seed recursion.
+        if (view instanceof ViewGroup) {
+            for (int i = 0; i < ((ViewGroup) view).getChildCount(); i++) {
+                View innerView = ((ViewGroup) view).getChildAt(i);
+                setupKeyboardHide(innerView);
+            }
+        }
+    }
+    //====================================================
+
+
+    //--------------PUBLIC CLASS FUNCTIONS---------------
+    //====================================================
+
+    public void loadDataViewTwo(){
+        targetDietTypeTV.setText(savedDietData.getString("targetDietType", null));
+        targetCaloriesTV.setText(String.valueOf(savedDietData.getInt("targetCalories", -1)));
+        targetCarbTV.setText(String.valueOf(savedDietData.getInt("targetCarb", -1)));
+        targetProteinTV.setText(String.valueOf(savedDietData.getInt("targetProtein", -1)));
+        targetFatTV.setText(String.valueOf(savedDietData.getInt("targetFat", -1)));
+
+        currCalories = savedDietData.getInt("currCalories",-1);
+        currCarb = savedDietData.getInt("currCarb",-1);
+        currProtein = savedDietData.getInt("currProtein",-1);
+        currFat = savedDietData.getInt("currFat",-1);
+
+        if(currCalories == -1){
+            resetCurrValues(findViewById(R.id.screen2));
+        }else{
+            currCaloriesTV.setText(String.valueOf(currCalories));
+            currCarbTV.setText(String.valueOf(currCarb));
+            currProteinTV.setText(String.valueOf(currProtein));
+            currFatTV.setText(String.valueOf(currFat));
+        }
+    }
+
+    public void setupViewOne() {
+        inputCaloriesET = (EditText) findViewById(R.id.inputCaloriesET);
+        calcCarbTV = (TextView) findViewById(R.id.calcCarbTV);
+        calcProteinTV = (TextView) findViewById(R.id.calcProteinTV);
+        calcFatTV = (TextView) findViewById(R.id.calcFatTV);
+        calcDietTypeTV = (TextView) findViewById(R.id.calcDietTypeTV);
+    }    
+
+    public void setupViewTwo() {
+        addCarbET = (EditText) findViewById(R.id.addCarbET);
+        addProteinET = (EditText) findViewById(R.id.addProteinET);
+        addFatET = (EditText) findViewById(R.id.addFatET);
+
+        targetDietTypeTV = (TextView) findViewById(R.id.targetDietTypeTV);
+        targetCaloriesTV = (TextView) findViewById(R.id.targetCaloriesTV);
+        targetCarbTV = (TextView) findViewById(R.id.targetCarbTV);
+        targetProteinTV = (TextView) findViewById(R.id.targetProteinTV);
+        targetFatTV = (TextView) findViewById(R.id.targetFatTV);
+
+        currCaloriesTV = (TextView) findViewById(R.id.currCaloriesTV);
+        currCarbTV = (TextView) findViewById(R.id.currCarbTV);
+        currProteinTV = (TextView) findViewById(R.id.currProteinTV);
+        currFatTV = (TextView) findViewById(R.id.currFatTV);
     }
 
     public void highCarbPlan(View view) {
@@ -318,47 +336,18 @@ public class MyActivity extends FragmentActivity {
         }
         closeKeyboard();
     }
-    //====================================================
-
-    public static void hideSoftKeyboard(Activity activity) {
-        InputMethodManager inputMethodManager = (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
-        inputMethodManager.hideSoftInputFromWindow(activity.getCurrentFocus().getWindowToken(), 0);
-    }
 
     public void hideKeyboardViewOne(){
-        if(!kbHideSetupOne){
-            setupKeyboardHide(findViewById(R.id.screen1));
-            kbHideSetupOne = true;
-        }
+        setupKeyboardHide(findViewById(R.id.screen1));
     }
+    
     public void hideKeyboardViewTwo(){
-        if(!kbHideSetupTwo){
-            setupKeyboardHide(findViewById(R.id.screen2));
-            kbHideSetupTwo = true;
-        }
-    }
-    private void setupKeyboardHide(View view) {
-        //Set up touch listener for non-text box views to hide keyboard.
-        if (!(view instanceof EditText)) {
-            view.setOnTouchListener(new View.OnTouchListener() {
-                public boolean onTouch(View v, MotionEvent event) {
-                    hideSoftKeyboard(MyActivity.this);
-                    return false;
-                }
-            });
-        }
-        //If a layout container, iterate over children and seed recursion.
-        if (view instanceof ViewGroup) {
-            for (int i = 0; i < ((ViewGroup) view).getChildCount(); i++) {
-                View innerView = ((ViewGroup) view).getChildAt(i);
-                setupKeyboardHide(innerView);
-            }
-        }
+        setupKeyboardHide(findViewById(R.id.screen2));
     }
 
     public void sendDietType(View view) {
         //DISPLAY ERROR MESSAGE IF NOT VALID ENTRY
-        if (tempDietType.isEmpty()) {
+        if (calcDietTypeTV.getText().toString().isEmpty()) {
             invalidEntryAlert("Please calculate a diet.");
         }else{
             mPager.setCurrentItem(1);
@@ -382,75 +371,71 @@ public class MyActivity extends FragmentActivity {
             targetFatTV.setText(String.valueOf(savedDietData.getInt("targetFat",-1)));
         }
     }
+    //====================================================
+
+    private int updateMacroIsInRange(String inputMacro){
+        int tempMacro;
+        try{
+            tempMacro = Integer.parseInt(inputMacro);
+        }catch(Exception e){
+            invalidEntryAlert("Input a valid value [-999,999]");
+            return 1000;
+        }
+        if(tempMacro < -999 || tempMacro > 999){
+            invalidEntryAlert("Input a valid value [-999,999]");
+            return 1000;
+        }
+        return tempMacro;
+    }
 
     public void updateCarb(View view){
-        try{
-            tempCarb = Integer.parseInt(addCarbET.getText().toString());
-        }catch(Exception e){
-            invalidEntryAlert("Input a valid value [-999,999]");
-            return;
-        }
-        if(tempCarb < -999 || tempCarb > 999){
-            invalidEntryAlert("Input a valid value [-999,999]");
-            return;
-        }
-        addCarbET.setText("");
-        currCarb += tempCarb;
-        currCarbTV.setText(String.valueOf(currCarb));
+        // 1000 will be invalid return value
+        tempCarb = updateMacroIsInRange(addCarbET.getText().toString());
+        if( tempCarb != 1000 ){
+            addCarbET.setText("");
+            currCarb += tempCarb;
+            currCarbTV.setText(String.valueOf(currCarb));
 
-        currCalories += tempCarb*4;
-        currCaloriesTV.setText(String.valueOf(currCalories));
+            currCalories += tempCarb*4;
+            currCaloriesTV.setText(String.valueOf(currCalories));
 
-        SharedPreferences.Editor preferencesEditor = savedDietData.edit();
-        preferencesEditor.putInt("currCarb", currCarb);
-        preferencesEditor.putInt("currCalories", currCalories);
-        preferencesEditor.apply();
+            SharedPreferences.Editor preferencesEditor = savedDietData.edit();
+            preferencesEditor.putInt("currCarb", currCarb);
+            preferencesEditor.putInt("currCalories", currCalories);
+            preferencesEditor.apply();
+        }
     }
     public void updateProtein(View view){
-        try{
-            tempProtein = Integer.parseInt(addProteinET.getText().toString());
-        }catch(Exception e){
-            invalidEntryAlert("Input a valid value [-999,999]");
-            return;
-        }
-        if(tempProtein < -999 || tempProtein > 999){
-            invalidEntryAlert("Input a valid value [-999,999]");
-            return;
-        }
-        addProteinET.setText("");
-        currProtein += tempProtein;
-        currProteinTV.setText(String.valueOf(currProtein));
+        tempProtein = updateMacroIsInRange(addProteinET.getText().toString());
+        if( tempProtein != 1000 ){
+            addProteinET.setText("");
+            currProtein += tempProtein;
+            currProteinTV.setText(String.valueOf(currProtein));
 
-        currCalories += tempProtein*4;
-        currCaloriesTV.setText(String.valueOf(currCalories));
+            currCalories += tempProtein*4;
+            currCaloriesTV.setText(String.valueOf(currCalories));
 
-        SharedPreferences.Editor preferencesEditor = savedDietData.edit();
-        preferencesEditor.putInt("currProtein", currProtein);
-        preferencesEditor.putInt("currCalories", currCalories);
-        preferencesEditor.apply();
+            SharedPreferences.Editor preferencesEditor = savedDietData.edit();
+            preferencesEditor.putInt("currProtein", currProtein);
+            preferencesEditor.putInt("currCalories", currCalories);
+            preferencesEditor.apply();
+        }
     }
     public void updateFat(View view){
-        try{
-            tempFat = Integer.parseInt(addFatET.getText().toString());
-        }catch(Exception e){
-            invalidEntryAlert("Input a valid value [-999,999]");
-            return;
-        }
-        if(tempFat < -999 || tempFat > 999){
-            invalidEntryAlert("Input a valid value [-999,999]");
-            return;
-        }
-        addFatET.setText("");
-        currFat += tempFat;
-        currFatTV.setText(String.valueOf(currFat));
+        tempFat = updateMacroIsInRange(addFatET.getText().toString());
+        if( tempFat != 1000 ){
+            addFatET.setText("");
+            currFat += tempFat;
+            currFatTV.setText(String.valueOf(currFat));
 
-        currCalories += tempFat*9;
-        currCaloriesTV.setText(String.valueOf(currCalories));
+            currCalories += tempFat*9;
+            currCaloriesTV.setText(String.valueOf(currCalories));
 
-        SharedPreferences.Editor preferencesEditor = savedDietData.edit();
-        preferencesEditor.putInt("currFat", currFat);
-        preferencesEditor.putInt("currCalories", currCalories);
-        preferencesEditor.apply();
+            SharedPreferences.Editor preferencesEditor = savedDietData.edit();
+            preferencesEditor.putInt("currFat", currFat);
+            preferencesEditor.putInt("currCalories", currCalories);
+            preferencesEditor.apply();
+        }
     }
 
     public void resetCurrValues(View view) {
