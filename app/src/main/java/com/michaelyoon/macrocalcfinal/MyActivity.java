@@ -29,30 +29,38 @@ public class MyActivity extends FragmentActivity {
 
     private final static String SHARED_PREFERENCES_NAME = "com.michaelyoon.macrocalcfinal.savedData";
     public static SharedPreferences savedDietData;
+    private static final int NUM_PAGES = 2;
+    private ViewPager mPager;
+    private PagerAdapter mPagerAdapter;
 
+    // === Calculator Fragment Views ===
     TextView calcDietTypeTV;
     TextView calcCarbTV;
     TextView calcProteinTV;
     TextView calcFatTV;
     EditText inputCaloriesET;
 
+    // === Temporary Variables ===
     String tempDietType;
     int tempCalories;
     int tempCarb;
     int tempProtein;
     int tempFat;
 
+    // === Counting Fragment Variables ===
+    // Target Variables
     String targetDietType;
     int targetCalories;
     int targetCarb;
     int targetProtein;
     int targetFat;
-
+    // Current Count Variables
     int currCalories;
     int currCarb;
     int currProtein;
     int currFat;
 
+    // === Counting Fragment Views ===
     TextView targetDietTypeTV;
     TextView targetCaloriesTV;
     TextView targetCarbTV;
@@ -65,11 +73,6 @@ public class MyActivity extends FragmentActivity {
     EditText addCarbET;
     EditText addProteinET;
     EditText addFatET;
-
-    private static final int NUM_PAGES = 2;
-    private ViewPager mPager;
-    private PagerAdapter mPagerAdapter;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -129,9 +132,6 @@ public class MyActivity extends FragmentActivity {
     }
 
 
-
-
-
     //--------------PRIVATE CLASS FUNCTIONS---------------
     //====================================================
     
@@ -177,6 +177,7 @@ public class MyActivity extends FragmentActivity {
             return targetCalories;
     }
 
+    // Alert Message
     private void invalidEntryAlert(String message) {
         AlertDialog.Builder builder = new AlertDialog.Builder(MyActivity.this);
 
@@ -188,16 +189,18 @@ public class MyActivity extends FragmentActivity {
         theAlertDialog.show();
     }
 
+    // Closes Keyboard
     private void closeKeyboard() {
         InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(inputCaloriesET.getWindowToken(), 0);
     }
-
     private static void hideSoftKeyboard(Activity activity) {
         InputMethodManager inputMethodManager = (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
         inputMethodManager.hideSoftInputFromWindow(activity.getCurrentFocus().getWindowToken(), 0);
     }
 
+    // Searches View recursively and sets an onTouch Listener to everything
+    // that is not an EditText to hide keyboard when touched.
     private void setupKeyboardHide(View view) {
         //Set up touch listener for non-text box views to hide keyboard.
         if (!(view instanceof EditText)) {
@@ -216,12 +219,29 @@ public class MyActivity extends FragmentActivity {
             }
         }
     }
-    //====================================================
 
+    // Checks to see if inputed grams of marconutrient is in range
+    // range = [-999-999]. Will return 1000 if not in range
+    private int updateMacroIsInRange(String inputMacro){
+        int tempMacro;
+        try{
+            tempMacro = Integer.parseInt(inputMacro);
+        }catch(Exception e){
+            invalidEntryAlert("Input a valid value [-999,999]");
+            return 1000;
+        }
+        if(tempMacro < -999 || tempMacro > 999){
+            invalidEntryAlert("Input a valid value [-999,999]");
+            return 1000;
+        }
+        return tempMacro;
+    }
 
     //--------------PUBLIC CLASS FUNCTIONS---------------
     //====================================================
 
+    // Gets saved data from SharedPreferences and sets values on 
+    // Counting Fragment
     public void loadDataViewTwo(){
         targetDietTypeTV.setText(savedDietData.getString("targetDietType", null));
         targetCaloriesTV.setText(String.valueOf(savedDietData.getInt("targetCalories", -1)));
@@ -244,6 +264,7 @@ public class MyActivity extends FragmentActivity {
         }
     }
 
+    // Setting ET & TV variables to views on Calculator Fragment
     public void setupViewOne() {
         inputCaloriesET = (EditText) findViewById(R.id.inputCaloriesET);
         calcCarbTV = (TextView) findViewById(R.id.calcCarbTV);
@@ -252,6 +273,7 @@ public class MyActivity extends FragmentActivity {
         calcDietTypeTV = (TextView) findViewById(R.id.calcDietTypeTV);
     }    
 
+    // Setting ET & TV variables to views on Calculator Fragment
     public void setupViewTwo() {
         addCarbET = (EditText) findViewById(R.id.addCarbET);
         addProteinET = (EditText) findViewById(R.id.addProteinET);
@@ -269,6 +291,7 @@ public class MyActivity extends FragmentActivity {
         currFatTV = (TextView) findViewById(R.id.currFatTV);
     }
 
+    // Calculates a High Carb Plan and sets respective TV's
     public void highCarbPlan(View view) {
         tempCalories = inputCaloriesIsInRange();
         if ( tempCalories != 0 ) {
@@ -286,6 +309,7 @@ public class MyActivity extends FragmentActivity {
         closeKeyboard();
     }
 
+    // Calculates a Moderate Plan and sets respective TV's
     public void moderatePlan(View view) {
         tempCalories = inputCaloriesIsInRange();
         if ( tempCalories != 0 ) {
@@ -303,6 +327,7 @@ public class MyActivity extends FragmentActivity {
         closeKeyboard();
     }
 
+    // Calculates a Zone Plan and sets respective TV's
     public void zonePlan(View view) {
         tempCalories = inputCaloriesIsInRange();
         if ( tempCalories != 0 ) {
@@ -320,6 +345,7 @@ public class MyActivity extends FragmentActivity {
         closeKeyboard();
     }
 
+    // Calculates a Low Carb Plan and sets respective TV's
     public void lowCarbPlan(View view) {
         tempCalories = inputCaloriesIsInRange();
         if ( tempCalories != 0 ) {
@@ -337,14 +363,15 @@ public class MyActivity extends FragmentActivity {
         closeKeyboard();
     }
 
+    // Calls setupKeyboardHide function by Fragment
     public void hideKeyboardViewOne(){
         setupKeyboardHide(findViewById(R.id.screen1));
     }
-    
     public void hideKeyboardViewTwo(){
         setupKeyboardHide(findViewById(R.id.screen2));
     }
 
+    // Saves new selected diet plan from calculator
     public void sendDietType(View view) {
         //DISPLAY ERROR MESSAGE IF NOT VALID ENTRY
         if (calcDietTypeTV.getText().toString().isEmpty()) {
@@ -371,23 +398,8 @@ public class MyActivity extends FragmentActivity {
             targetFatTV.setText(String.valueOf(savedDietData.getInt("targetFat",-1)));
         }
     }
-    //====================================================
 
-    private int updateMacroIsInRange(String inputMacro){
-        int tempMacro;
-        try{
-            tempMacro = Integer.parseInt(inputMacro);
-        }catch(Exception e){
-            invalidEntryAlert("Input a valid value [-999,999]");
-            return 1000;
-        }
-        if(tempMacro < -999 || tempMacro > 999){
-            invalidEntryAlert("Input a valid value [-999,999]");
-            return 1000;
-        }
-        return tempMacro;
-    }
-
+    // Updates new macro input to counted macro and calories
     public void updateCarb(View view){
         // 1000 will be invalid return value
         tempCarb = updateMacroIsInRange(addCarbET.getText().toString());
@@ -438,6 +450,7 @@ public class MyActivity extends FragmentActivity {
         }
     }
 
+    // Resets counted macro count.
     public void resetCurrValues(View view) {
         currCalories = 0;
         currCarb = 0;

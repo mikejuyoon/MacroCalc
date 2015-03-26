@@ -27,8 +27,10 @@ public class Fragment2 extends Fragment {
 
         parentActivity = (MyActivity)getActivity();
 
-		parentActivity.setupViewTwo();
+        // Loads saved data from SharedPreferences
         parentActivity.loadDataViewTwo();
+        // Sets up Keyboard onTouch Listener
+        parentActivity.setupViewTwo();
         parentActivity.hideKeyboardViewTwo();
     }
 }

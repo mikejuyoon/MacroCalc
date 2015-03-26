@@ -31,6 +31,7 @@ public class Fragment1 extends Fragment{
 
         parentActivity = (MyActivity)getActivity();
 
+        // Sets up Keyboard onTouch Listener
 		parentActivity.setupViewOne();
         parentActivity.hideKeyboardViewOne();
     }
